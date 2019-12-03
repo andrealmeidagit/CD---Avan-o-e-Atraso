@@ -180,22 +180,32 @@ xlabel('Tempo');
         \caption{Comparação entre o resultado experiental e o modelo de segunda ordem.}\label{fig:resposta_modelo}
 \end{figure}
 
-        \color{gray}{0.5} \begin{verbatim}
-a =
 
+\color{gray} \begin{verbatim}
+a =
    10.8773
 
-
 b =
-
   613.5793
 
-
 k =
-
    2.5770e+05
 
+g =
+      613.6
+  -------------
+  s^2 + 10.88 s
+ 
+Continuous-time transfer function.
+
+gs =
+          613.6
+  ---------------------
+  s^2 + 10.88 s + 613.6
+ 
+Continuous-time transfer function.
 \end{verbatim} \color{black}
+
 
 \subsection{Discretização}
 
@@ -206,6 +216,8 @@ Após a definição do modelo dinâmico, a discretização do sistema por meio d
     \label{eq:trafoZ}
 \end{equation}
 
+O \textit{script} de MATLAB equivalente pode ser observado a seguir
+
 \begin{lstlisting}
 ts = 0.05;                                  %Periodo de amostragem
 discretizado = c2d(g, ts, 'zoh');           %discretizando a FT em malha aberta
@@ -213,6 +225,17 @@ discretizado = c2d(g, ts, 'zoh');           %discretizando a FT em malha aberta
 polos = roots(den);                         %obtendo o vetor de polos em Z
 zeros = roots(num);                         %obtendo o vetor de zeros em Z
 \end{lstlisting}
+
+\color{gray} \begin{verbatim}
+discretizado =
+ 
+    0.645 z + 0.5382
+  ---------------------
+  z^2 - 1.58 z + 0.5805
+ 
+Sample time: 0.05 seconds
+Discrete-time transfer function.
+\end{verbatim} \color{black}
 
 \subsection{Requisitos}
 {
@@ -239,6 +262,17 @@ Zd = exp(-qsi_projeto * wn_projeto * ts) * exp (1j * sqrt(1-(qsi_projeto^2)) * w
 figure; rlocus (discretizado); hold on;
 scatter (real(Zd),imag(Zd), 'filled');
 \end{lstlisting}
+
+\color{gray} \begin{verbatim}
+qsi_projeto =
+    0.8924
+
+wn_projeto =
+   14.9402
+
+Zd =
+   0.4845 + 0.1698i
+\end{verbatim} \color{black}
 
 \begin{figure}[H]
     \centering
@@ -280,10 +314,16 @@ title({'Respostas do carrinho, sistema e sistema controlado','à entrada degrau'
 xlabel('Tempo');
 \end{lstlisting}
 
-\includegraphics [width=4in]{images/Matlab/identifica_03.eps}
-
-\includegraphics [width=4in]{images/Matlab/identifica_04.eps}
-
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_03.eps}
+        \caption{LGR do sistema.}\label{fig:lgr_controlador1}
+\end{figure}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_04.eps}
+        \caption{Resposta do sistema.}\label{fig:resposta_controlador1}
+\end{figure}
 
 \subsection*{Controlador 2 - utilizando a tática do triângulo isóceles:}
 
@@ -308,9 +348,16 @@ title({'Respostas do carrinho, sistema e sistema controlado','à entrada degrau'
 xlabel('Tempo');
 \end{lstlisting}
 
-\includegraphics [width=4in]{images/Matlab/identifica_05.eps}
-
-\includegraphics [width=4in]{images/Matlab/identifica_06.eps}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_05.eps}
+        \caption{LGR do sistema.}\label{fig:lgr_controlador2}
+\end{figure}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_06.eps}
+        \caption{Resposta do sistema.}\label{fig:resposta_controlador2}
+\end{figure}
 
 
 \subsection*{Controlador 3 - cancelamento de polo}
@@ -339,45 +386,50 @@ title({'Respostas do carrinho, sistema e sistema controlado','à entrada degrau'
 xlabel('Tempo');
 \end{lstlisting}
 
-\includegraphics [width=4in]{images/Matlab/identifica_07.eps}
-
-\includegraphics [width=4in]{images/Matlab/identifica_08.eps}
-
-
-\subsection*{Análise frequência}
-
-\begin{lstlisting}
-[Gm,Pm, Wcg, Wcp] = margin (g);
-
-WnMF = Wcp;
-qsiMF = Pm/100;
-
-Mp_freq = exp((-pi*qsiMF)/(sqrt(1-(qsiMF^2))));     % pico
-tp_freq = pi/(WnMF*sqrt(1-(qsiMF^2)));              % tempo de pico
-
-% requisitos
-MP_req_freq = 0.1;
-
-qsi_proj_freq = abs(log(MP_req_freq))/sqrt((pi^2)+(abs(log(MP_req_freq))^2));
-Pm_proj = 100*qsi_proj_freq;
-\end{lstlisting}
-
-\subsection*{Controlador Frequência}
-
-\begin{lstlisting}
-
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_07.eps}
+        \caption{LGR do sistema.}\label{fig:lgr_controlador3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/identifica_08.eps}
+        \caption{Resposta do sistema.}\label{fig:resposta_controlador3}
+\end{figure}
 
 
+\subsection{\textit{SISOTOOLS}}
 
+Com o auxílio da ferramenta \textit{SISOTOOLS}, foi possível elaborar um quarto controlador, ajustando o polo e o zero manualmente para tentar obter uma resposta melhor do que os três métodos de controle apresentados acima.
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/SISOTOOLS-LGR.PNG}
+        \caption{Definição de controlador usando o LGR usando a ferramenta \textit{SISOTOOLS}}\label{fig:SISOTOOLS-LGR}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=.8\linewidth]{images/Matlab/SISOTOOLS-STEP.PNG}
+        \caption{Resposta ao degrau da planta em malha fechada - controlador desenvolvido com a ferramenta  \textit{SISOTOOLS}}\label{fig:SISOTOOLS-STEP}
+\end{figure}
 
 \section{Resultados}
 
+Em todos os quatro projetos de controlador, nenhuma resposta pode ser observada na planta durante a execução do experimento. Isso provavelmente decorre de um erro na modelagem que não conseguimos identificar.
 
-
+Por um lado, durante o experimento na planta, o \textit{scope} do SIMULINK indicou que a ação de controle na entrada da planta era praticamente nula. Por outro, outro \textit{scope} mostrou um sinal saturado, oscilatório e de altíssima frequência, na saída do controlador. Nenhum dos dois casos condiz com as simulações feitas anteriormente.
 
 \section{Conclusão}
+{
+    Não foi possível verificar na planta o funcionamento dos controladores projetados, porém o processo de elaboração de quatro controladores foi bastante instrutivo.
+}
 
+%\begin{figure}[H]
+%    \centering
+%        \includegraphics[width=.8\linewidth]{deuces.jpg}
+%        \caption{é nois}\label{ehnois}
+%\end{figure}
 
 \end{document}
 
